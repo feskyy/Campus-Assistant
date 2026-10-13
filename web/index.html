@@ -1,46 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Расписание, новости и каталог кампуса в одном приложении.">
+  <meta name="theme-color" content="#3448A5">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="campus_assistant">
+  <meta name="apple-mobile-web-app-title" content="Campus Assistant">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>campus_assistant</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
+  <title>Campus Assistant</title>
+  <style>
+    :root { color-scheme: light dark; }
+    html, body { margin: 0; background: #f5f6f8; color: #202531; font-family: system-ui, sans-serif; }
+    #startup { position: fixed; inset: 0; display: grid; place-items: center; background: #f5f6f8; z-index: 1000; }
+    #startup-content { padding: 24px; text-align: center; max-width: 360px; }
+    #startup h1 { font-size: 24px; font-weight: 600; letter-spacing: -.5px; }
+    #startup-status { color: #626b79; font-size: 14px; line-height: 1.5; }
+    #startup-progress { width: 24px; height: 24px; border: 2px solid #dde1e8; border-top-color: #3448a5; border-radius: 50%; margin: 24px auto; animation: spin 1s linear infinite; }
+    #startup-retry { background: #3448a5; color: white; border: 0; border-radius: 12px; padding: 14px 24px; font: inherit; cursor: pointer; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { #startup-progress { animation: none; } }
+    @media (prefers-color-scheme: dark) {
+      html, body, #startup { background: #12151b; color: #edf0f6; }
+      #startup-status { color: #a5aebc; }
+      #startup-progress { border-color: #343b47; border-top-color: #aab8ff; }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
+  <div id="startup" role="status" aria-live="polite">
+    <div id="startup-content">
+      <h1>Campus Assistant</h1>
+      <p id="startup-status">Открываем приложение…</p>
+      <div id="startup-progress" aria-hidden="true"></div>
+      <button id="startup-retry" hidden onclick="location.reload()">Повторить</button>
+    </div>
+  </div>
+  <noscript>Для запуска Campus Assistant включите JavaScript в браузере.</noscript>
+  <script src="flutter_bootstrap.js" async onerror="document.getElementById('startup-status').textContent='Не удалось загрузить приложение. Повторите загрузку.';document.getElementById('startup-retry').hidden=false;document.getElementById('startup-progress').hidden=true;"></script>
 </body>
 </html>

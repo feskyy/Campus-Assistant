@@ -46,3 +46,10 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+tooling/node_modules/
+*firebase-config.json
+.firebase/
+
+.browser-check*/
+**/__pycache__/
