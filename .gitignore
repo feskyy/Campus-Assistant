@@ -53,3 +53,33 @@ tooling/node_modules/
 
 .browser-check*/
 **/__pycache__/
+
+# Local Firebase configuration; keep only the placeholder example in Git.
+/firebase*-config*.json
+!/firebase*-config.example.json
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
+
+# Credentials and signing material.
+.env
+.env.*
+!.env.example
+**/key.properties
+**/local.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+**/*service-account*.json
+**/*serviceAccount*.json
+**/*adminsdk*.json
+
+# Local screenshots, generated binaries, and editor state.
+/docs/artifacts/
+.vscode/
+*.apk
+*.aab
+*.ipa

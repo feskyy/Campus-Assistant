@@ -1,3 +1,7 @@
+import 'package:campus_assistant/shared/widgets/ui/ui.dart' as ui;
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
+import 'package:campus_assistant/l10n/ui_text.dart';
+import 'package:campus_assistant/l10n/app_localizations.dart';
 import 'package:campus_assistant/core/data/campus_state.dart';
 import 'package:campus_assistant/core/data/campus_repository.dart';
 import 'package:flutter/material.dart';
@@ -15,33 +19,10 @@ class DataView extends ConsumerWidget {
           loading: () => const _LoadingSkeleton(),
           error: (error, stack) => Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.wifi_off_rounded,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    size: 28,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Не удалось обновить данные',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    error.toString(),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: () =>
-                        ref.read(campusDataProvider.notifier).refresh(),
-                    child: const Text('Повторить'),
-                  ),
-                ],
+              child: ui.ErrorState(
+                title: tr(context, 'Не удалось обновить данные'),
+                message: error.toString(),
+                onRetry: () => ref.read(campusDataProvider.notifier).refresh(),
               ),
             ),
           ),
@@ -58,43 +39,54 @@ class DataView extends ConsumerWidget {
 class _LoadingSkeleton extends StatelessWidget {
   const _LoadingSkeleton();
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Загрузка данных',
-    child: ExcludeSemantics(
-      child: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          for (var i = 0; i < 3; i++)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final width in [0.4, 0.8, 0.6])
+  Widget build(BuildContext context) {
+    final t = CampusTokens.of(context);
+    return Semantics(
+      label: tr(context, 'Загрузка данных'),
+      child: ExcludeSemantics(
+        child: ListView(
+          padding: EdgeInsets.all(t.space16),
+          children: [
+            for (var i = 0; i < 3; i++)
+              Padding(
+                padding: EdgeInsets.only(bottom: t.space16),
+                child: ui.CampusCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 16 / 10,
+                        child: ColoredBox(color: t.surface2),
+                      ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: FractionallySizedBox(
-                          widthFactor: width,
-                          child: Container(
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
+                        padding: EdgeInsets.all(t.space16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (final factor in [0.8, 0.6])
+                              Padding(
+                                padding: EdgeInsets.only(bottom: t.space8),
+                                child: FractionallySizedBox(
+                                  widthFactor: factor,
+                                  child: ColoredBox(
+                                    color: t.surface2,
+                                    child: SizedBox(height: t.space16),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class SourceNotice extends StatelessWidget {
@@ -130,17 +122,17 @@ class SourceNotice extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Источник данных',
+                tooltip: tr(context, 'Источник данных'),
                 icon: const Icon(Icons.more_horiz, size: 18),
                 onPressed: () => showDialog<void>(
                   context: context,
                   builder: (dialogContext) => AlertDialog(
-                    title: const Text('Источник данных'),
+                    title: Text(tr(context, 'Источник данных')),
                     content: Text(data.source),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogContext),
-                        child: const Text('Понятно'),
+                        child: Text(tr(context, 'Понятно')),
                       ),
                     ],
                   ),
@@ -148,6 +140,15 @@ class SourceNotice extends StatelessWidget {
               ),
             ],
           ),
+          if (cached)
+            Text(
+              (AppLocalizations.of(context)?.offline(
+                    data.cachedAt?.toLocal().toString().split('.').first ??
+                        (AppLocalizations.of(context)?.unknownDate ??
+                            'неизвестной даты'),
+                  )) ??
+                  'Нет сети · данные от неизвестной даты',
+            ),
           if (data.warning != null)
             Text(
               data.warning!,

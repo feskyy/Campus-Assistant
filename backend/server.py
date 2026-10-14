@@ -1,42 +1,16 @@
 """Real HTTP server with DEMONSTRATION data; no university integration."""
 import argparse
 import json
-from datetime import datetime, timedelta
+from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
-DATA = {
-    "/schedule": [
-        {"id": "test-lesson-1", "subject": "Демонстрация: Flutter",
-         "teacher": "Тестовый преподаватель", "building": "Тестовый корпус",
-         "room": "101", "weekday": 1, "startMinutes": 540, "endMinutes": 630,
-         "type": "lab", "group": "TEST-101"},
-        {"id": "test-lesson-2", "subject": "Демонстрация: REST API",
-         "teacher": "Тестовый преподаватель", "building": "Тестовый корпус",
-         "room": "102", "weekday": 2, "startMinutes": 600, "endMinutes": 690,
-         "type": "practice", "group": "TEST-101"},
-        {"id": "test-lesson-3", "subject": "Демонстрация: базы данных",
-         "teacher": "Тестовый преподаватель", "building": "Тестовый корпус",
-         "room": "201", "weekday": 3, "startMinutes": 540, "endMinutes": 630,
-         "type": "lecture", "group": "TEST-102"},
-    ],
-    "/news": [
-        {"id": "test-news", "title": "Демонстрация REST API",
-         "summary": "Тестовая новость; не информация университета.",
-         "content": "Это полный текст тестовой новости. Приложение получило его настоящим HTTP-запросом.",
-         "category": "Демонстрация", "publishedAt": "2026-10-12T09:00:00"},
-    ],
-}
+DATA = json.loads(Path(__file__).with_name("campus_demo.json").read_text(encoding="utf-8"))
 
 def response_data(path):
     if path == "/health":
         return {"status": "ok", "source": "demo", "universityData": False}
-    if path == "/events":
-        start = datetime.now().replace(hour=10, minute=0, second=0, microsecond=0) + timedelta(days=7)
-        return [{"id": "test-event", "title": "Демонстрационное событие",
-                 "description": "Тестовый пример. Это не мероприятие университета.",
-                 "location": "Тестовый корпус", "startAt": start.isoformat()}]
-    return DATA.get(path)
+    return DATA.get(path.lstrip("/")) if path in {"/schedule", "/news", "/events", "/subjects", "/teachers", "/buildings"} else None
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):

@@ -1,5 +1,7 @@
 import 'package:campus_assistant/core/utils/date_format.dart';
 import 'package:campus_assistant/features/feed/domain/entities/campus_event.dart';
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
+import 'package:campus_assistant/shared/widgets/ui/campus_card.dart';
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
@@ -16,75 +18,37 @@ class EventCard extends StatelessWidget {
   final Widget? trailing;
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context), scheme = theme.colorScheme;
+    final t = CampusTokens.of(context), text = Theme.of(context).textTheme;
     return SizedBox(
       width: width,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: CampusCard(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
               children: [
-                Container(
-                  width: 52,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: scheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        event.startAt.day.toString(),
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          color: scheme.primary,
-                        ),
-                      ),
-                      Text(
-                        formatDayMonth(event.startAt).split(' ').last,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
+                Icon(Icons.event_rounded, color: t.accent),
+                SizedBox(width: t.space8),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        event.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${formatTime(event.startAt)} · ${event.location}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
+                  child: Text(
+                    '${formatDayMonth(event.startAt)} · ${formatTime(event.startAt)}',
+                    style: text.labelMedium?.copyWith(color: t.accent),
                   ),
                 ),
-                if (trailing != null)
-                  trailing!
-                else
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: Icon(Icons.chevron_right_rounded, size: 18),
-                  ),
+                ?trailing,
               ],
             ),
-          ),
+            SizedBox(height: t.space16),
+            Text(
+              event.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: t.space8),
+            Text(event.location, style: text.bodySmall),
+          ],
         ),
       ),
     );

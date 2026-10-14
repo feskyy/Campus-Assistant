@@ -1,3 +1,5 @@
+import 'package:campus_assistant/core/di/storage_providers.dart';
+
 import 'dart:async';
 
 import 'package:campus_assistant/core/data/app_settings.dart';
@@ -6,7 +8,10 @@ import 'package:campus_assistant/features/schedule/domain/entities/lesson.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final campusRepositoryProvider = Provider<CampusDataSource>(
-  (ref) => CampusRepository(prefs: ref.watch(sharedPreferencesProvider)),
+  (ref) => CampusRepository(
+    prefs: ref.watch(sharedPreferencesProvider),
+    store: ref.watch(localStoreProvider),
+  ),
 );
 final campusDataProvider = AsyncNotifierProvider<CampusController, CampusData>(
   CampusController.new,
@@ -21,7 +26,9 @@ class CampusController extends AsyncNotifier<CampusData> {
       unawaited(
         Future<void>(() async {
           final next = await AsyncValue.guard(repository.load);
-          if (ref.mounted) state = next;
+          if (ref.mounted) {
+            state = next;
+          }
         }),
       );
       return cache;
@@ -78,10 +85,14 @@ class FavoritesController extends Notifier<Set<String>> {
   Future<void> _pending = Future.value();
   @override
   Set<String> build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+    final store = ref.watch(localStoreProvider);
     return {
-      ...?prefs.getStringList('favorite_news_ids')?.map((e) => 'news:$e'),
-      ...?prefs.getStringList('favorite_event_ids')?.map((e) => 'event:$e'),
+      ...?(store.read('favorite_news_ids') as List?)?.cast<String>().map(
+        (e) => 'news:$e',
+      ),
+      ...?(store.read('favorite_event_ids') as List?)?.cast<String>().map(
+        (e) => 'event:$e',
+      ),
     };
   }
 
@@ -91,21 +102,36 @@ class FavoritesController extends Notifier<Set<String>> {
     return operation;
   }
 
+  Future<void> replace(Set<String> values) async {
+    final store = ref.read(localStoreProvider);
+    for (final kind in ['news', 'event']) {
+      await store.write(
+        kind == 'news' ? 'favorite_news_ids' : 'favorite_event_ids',
+        values
+            .where((value) => value.startsWith('$kind:'))
+            .map((value) => value.substring(kind.length + 1))
+            .toList(),
+      );
+    }
+    if (ref.mounted) {
+      state = {...values};
+    }
+  }
+
   Future<void> _toggle(String kind, String id) async {
     if (!ref.mounted) return;
     final key = '$kind:$id';
     final next = {...state};
     next.contains(key) ? next.remove(key) : next.add(key);
-    final saved = await ref
-        .read(sharedPreferencesProvider)
-        .setStringList(
+    state = next;
+    await ref
+        .read(localStoreProvider)
+        .write(
           kind == 'news' ? 'favorite_news_ids' : 'favorite_event_ids',
           next
               .where((e) => e.startsWith('$kind:'))
               .map((e) => e.substring(kind.length + 1))
               .toList(),
         );
-    if (!saved) throw const FormatException('Не удалось сохранить избранное');
-    if (ref.mounted) state = next;
   }
 }

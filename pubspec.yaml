@@ -1,5 +1,5 @@
 name: campus_assistant
-description: "A new Flutter project."
+description: "Студенческий помощник: расписание, новости, события и каталог кампуса."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -31,7 +31,15 @@ dependencies:
   flutter:
     sdk: flutter
 
+  cached_network_image: ^3.4.1
+  flutter_cache_manager: ^3.4.5
   cupertino_icons: ^1.0.8
+  hive_ce: ^2.11.0
+  hive_ce_flutter: ^2.3.1
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  json_annotation: ^4.12.0
   dio: ^5.11.1
   flutter_riverpod: ^3.4.3
   go_router: ^18.0.2
@@ -42,8 +50,13 @@ dependencies:
   cloud_firestore: ^6.10.0
   firebase_messaging: ^16.7.0
   google_sign_in: ^7.2.0
+  url_launcher: ^6.3.3
 
 dev_dependencies:
+  file: ^7.0.1
+  fake_cloud_firestore: ^4.3.0
+  build_runner: ^2.4.15
+  json_serializable: ^6.9.5
   flutter_test:
     sdk: flutter
 
@@ -63,7 +76,15 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+  generate: true
   uses-material-design: true
+  assets:
+    - assets/images/design_campus.jpg
+    - assets/images/news/
+    - assets/images/events/
+    - assets/images/buildings/
+    - assets/images/teachers/
+    - assets/images/subjects/
   fonts:
     - family: Inter
       fonts:

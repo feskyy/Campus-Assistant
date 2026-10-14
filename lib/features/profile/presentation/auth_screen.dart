@@ -1,4 +1,6 @@
-import 'package:campus_assistant/core/theme/campus_style.dart';
+import 'package:campus_assistant/shared/widgets/ui/ui.dart' as ui;
+import 'package:campus_assistant/l10n/ui_text.dart';
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
 
 import 'package:campus_assistant/core/data/firebase_services.dart';
 import 'package:flutter/material.dart';
@@ -51,57 +53,24 @@ class _LoginState extends ConsumerState<LoginScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(CampusTokens.of(context).space24),
               child: Form(
                 key: form,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: CampusStyle.hero(context),
-                        borderRadius: BorderRadius.circular(
-                          CampusStyle.heroRadius,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.school_outlined,
-                            size: 36,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            'CAMPUS ASSISTANT',
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(
-                                  letterSpacing: 1.5,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            register ? 'Регистрация' : 'Вход в приложение',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Учебный день — в одном месте.',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                ),
-                          ),
-                        ],
+                    ui.HeroBanner(
+                      title: register
+                          ? tr(context, 'Регистрация')
+                          : tr(context, 'Вход в приложение'),
+                      subtitle: tr(context, 'Учебный день — в одном месте.'),
+                      action: Text(
+                        'CAMPUS ASSISTANT',
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: CampusTokens.of(context).space24),
                     if (!ready)
                       Text(
                         ref.watch(firebaseErrorProvider) ??
@@ -112,71 +81,85 @@ class _LoginState extends ConsumerState<LoginScreen> {
                       if (register) ...[
                         TextFormField(
                           controller: name,
+                          autofillHints: const [AutofillHints.name],
+                          textInputAction: TextInputAction.next,
                           maxLength: 100,
-                          decoration: const InputDecoration(
-                            labelText: 'Имя',
+                          decoration: InputDecoration(
+                            labelText: tr(context, 'Имя'),
                             errorMaxLines: 3,
                           ),
                           validator: (value) =>
                               value == null || value.trim().isEmpty
-                              ? 'Введите имя'
+                              ? tr(context, 'Введите имя')
                               : null,
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: CampusTokens.of(context).space24),
                       ],
                       TextFormField(
                         controller: email,
+                        autofillHints: const [AutofillHints.email],
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
                           labelText: 'Email',
+                          prefixIcon: Icon(Icons.alternate_email_rounded),
                           errorMaxLines: 3,
                         ),
                         validator: (value) =>
                             RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                                 .hasMatch(value?.trim() ?? '')
                             ? null
-                            : 'Введите корректный email',
+                            : tr(context, 'Введите корректный email'),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: CampusTokens.of(context).space24),
                       TextFormField(
                         controller: password,
+                        autofillHints: [
+                          register
+                              ? AutofillHints.newPassword
+                              : AutofillHints.password,
+                        ],
+                        textInputAction: register
+                            ? TextInputAction.next
+                            : TextInputAction.done,
                         obscureText: hidePassword,
                         decoration: InputDecoration(
-                          labelText: 'Пароль',
+                          labelText: tr(context, 'Пароль'),
+                          prefixIcon: const Icon(Icons.lock_outline_rounded),
                           suffixIcon: IconButton(
                             tooltip: hidePassword
-                                ? 'Показать пароль'
-                                : 'Скрыть пароль',
+                                ? tr(context, 'Показать пароль')
+                                : tr(context, 'Скрыть пароль'),
                             onPressed: () =>
                                 setState(() => hidePassword = !hidePassword),
                             icon: Icon(
                               hidePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
+                                  ? Icons.visibility_rounded
+                                  : Icons.visibility_off_rounded,
                             ),
                           ),
                           errorMaxLines: 3,
                         ),
                         validator: (value) => (value?.length ?? 0) >= 6
                             ? null
-                            : 'Минимум 6 символов',
+                            : tr(context, 'Минимум 6 символов'),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: CampusTokens.of(context).space24),
                       if (register) ...[
                         TextFormField(
                           controller: confirmation,
                           obscureText: hidePassword,
-                          decoration: const InputDecoration(
-                            labelText: 'Повторите пароль',
+                          decoration: InputDecoration(
+                            labelText: tr(context, 'Повторите пароль'),
                             errorMaxLines: 3,
                           ),
                           validator: (value) => value == null || value.isEmpty
-                              ? 'Повторите пароль'
+                              ? tr(context, 'Повторите пароль')
                               : value != password.text
-                              ? 'Пароли не совпадают'
+                              ? tr(context, 'Пароли не совпадают')
                               : null,
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: CampusTokens.of(context).space24),
                       ],
                       FilledButton(
                         onPressed: busy
@@ -201,7 +184,11 @@ class _LoginState extends ConsumerState<LoginScreen> {
                                   );
                                 }
                               },
-                        child: Text(register ? 'Создать аккаунт' : 'Войти'),
+                        child: Text(
+                          register
+                              ? tr(context, 'Создать аккаунт')
+                              : tr(context, 'Войти'),
+                        ),
                       ),
                       TextButton(
                         onPressed: busy
@@ -211,7 +198,9 @@ class _LoginState extends ConsumerState<LoginScreen> {
                                 message = null;
                               }),
                         child: Text(
-                          register ? 'Уже есть аккаунт' : 'Регистрация',
+                          register
+                              ? tr(context, 'Уже есть аккаунт')
+                              : tr(context, 'Регистрация'),
                         ),
                       ),
                       OutlinedButton(
@@ -219,7 +208,7 @@ class _LoginState extends ConsumerState<LoginScreen> {
                             ? null
                             : () =>
                                   run(ref.read(authRepositoryProvider).google),
-                        child: const Text('Войти через Google'),
+                        child: Text(tr(context, 'Войти через Google')),
                       ),
                       TextButton(
                         onPressed: busy
@@ -228,7 +217,10 @@ class _LoginState extends ConsumerState<LoginScreen> {
                                 if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                                     .hasMatch(email.text.trim())) {
                                   setState(
-                                    () => message = 'Введите корректный email',
+                                    () => message = tr(
+                                      context,
+                                      'Введите корректный email',
+                                    ),
                                   );
                                   return;
                                 }
@@ -236,18 +228,21 @@ class _LoginState extends ConsumerState<LoginScreen> {
                                   () => ref
                                       .read(authRepositoryProvider)
                                       .resetPassword(email.text),
-                                  success: 'Если аккаунт существует, письмо для восстановления отправлено.',
+                                  success: tr(
+                                    context,
+                                    'Если аккаунт существует, письмо для восстановления отправлено.',
+                                  ),
                                 );
                               },
-                        child: const Text('Восстановить пароль'),
+                        child: Text(tr(context, 'Восстановить пароль')),
                       ),
                     ],
                     if (busy) ...[
-                      const SizedBox(height: 24),
+                      SizedBox(height: CampusTokens.of(context).space24),
                       const CircularProgressIndicator(),
                     ],
                     if (message != null) ...[
-                      const SizedBox(height: 24),
+                      SizedBox(height: CampusTokens.of(context).space24),
                       Text(message!, textAlign: TextAlign.center),
                     ],
                   ],

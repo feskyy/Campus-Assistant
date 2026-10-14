@@ -47,7 +47,7 @@ class AppSettingsController extends Notifier<AppSettings> {
         (e) => e.name == themeName,
         orElse: () => ThemeMode.system,
       ),
-      localeCode: 'ru',
+      localeCode: prefs.getString('locale_code') == 'en' ? 'en' : 'ru',
       selectedGroup: prefs.getString('selected_group') ?? 'CS-221',
       notificationsEnabled: prefs.getBool('notifications_enabled') ?? false,
       notificationsOwner: prefs.getString('notifications_owner') ?? '',
@@ -69,6 +69,10 @@ class AppSettingsController extends Notifier<AppSettings> {
     return operation;
   }
 
+  Future<void> setLocale(String code) => _save(
+    (prefs) => prefs.setString('locale_code', code == 'en' ? 'en' : 'ru'),
+    (value) => value.copyWith(localeCode: code == 'en' ? 'en' : 'ru'),
+  );
   Future<void> setThemeMode(ThemeMode mode) => _save(
     (prefs) => prefs.setString('theme_mode', mode.name),
     (value) => value.copyWith(themeMode: mode),

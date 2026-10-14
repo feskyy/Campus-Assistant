@@ -1,4 +1,4 @@
-import 'package:campus_assistant/core/theme/campus_style.dart';
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
 import 'package:flutter/material.dart';
 
 class PageBody extends StatelessWidget {
@@ -30,14 +30,15 @@ class PageIntro extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final t = CampusTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.only(bottom: t.space24),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(CampusStyle.sectionGap),
+        padding: EdgeInsets.all(t.space24),
         decoration: BoxDecoration(
-          gradient: CampusStyle.hero(context),
-          borderRadius: BorderRadius.circular(CampusStyle.heroRadius),
+          gradient: t.heroGradient,
+          borderRadius: BorderRadius.circular(t.cardRadius),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,10 +49,10 @@ class PageIntro extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: t.space8),
             Text(title, style: theme.textTheme.headlineMedium),
             if (subtitle != null) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: t.space8),
               Text(
                 subtitle!,
                 style: theme.textTheme.bodyMedium?.copyWith(

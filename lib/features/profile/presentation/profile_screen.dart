@@ -1,10 +1,16 @@
+import 'package:campus_assistant/shared/widgets/ui/ui.dart' as ui;
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
+import 'package:campus_assistant/l10n/ui_text.dart';
+import 'package:campus_assistant/l10n/app_localizations.dart';
+import 'package:campus_assistant/core/di/firebase_providers.dart';
+import 'package:campus_assistant/core/router/routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:campus_assistant/core/data/notifications.dart';
 import 'package:campus_assistant/core/data/app_settings.dart';
 import 'package:campus_assistant/core/data/auth_state.dart';
 import 'package:campus_assistant/core/data/firebase_services.dart';
 import 'package:campus_assistant/shared/widgets/page_body.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,19 +41,23 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
     final settings = ref.watch(appSettingsProvider);
     final authenticated =
         ref.watch(authControllerProvider) == SessionMode.authenticated;
-    final user = authenticated ? FirebaseAuth.instance.currentUser : null;
+    final users = ref.watch(userRepositoryProvider);
+    final user = authenticated ? users.currentUser : null;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Профиль и настройки')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.profileTitle)),
       body: PageBody(
         maxWidth: 680,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: EdgeInsets.all(CampusTokens.of(context).space16),
           children: [
-            Card(
-              color: theme.colorScheme.primaryContainer,
+            ui.CampusCard(
+              padding: EdgeInsets.zero,
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(
+                  CampusTokens.of(context).space16 +
+                      CampusTokens.of(context).space4,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -62,18 +72,19 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                             color: theme.colorScheme.onPrimaryContainer,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: CampusTokens.of(context).space16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                user?.displayName ?? 'Гость',
+                                user?.displayName ?? tr(context, 'Гость'),
                                 style: theme.textTheme.titleLarge,
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: CampusTokens.of(context).space4),
                               Text(
-                                user?.email ?? 'Демонстрационный режим',
+                                user?.email ??
+                                    tr(context, 'Демонстрационный режим'),
                                 style: theme.textTheme.bodySmall,
                               ),
                             ],
@@ -82,18 +93,18 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                       ],
                     ),
                     if (user != null) ...[
-                      const SizedBox(height: 16),
-                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user.uid)
-                            .snapshots(),
+                      SizedBox(height: CampusTokens.of(context).space16),
+                      StreamBuilder<String?>(
+                        stream: users.watchName(user.uid),
                         builder: (context, snapshot) => Text(
                           snapshot.hasError
-                              ? 'Не удалось загрузить профиль Firestore'
-                              : snapshot.data?.data()?['name'] as String? ??
+                              ? tr(
+                                  context,
+                                  'Не удалось загрузить профиль Firestore',
+                                )
+                              : snapshot.data ??
                                     user.displayName ??
-                                    'Имя не указано',
+                                    tr(context, 'Имя не указано'),
                         ),
                       ),
                       TextButton(
@@ -106,7 +117,7 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                                 final name = await showDialog<String>(
                                   context: context,
                                   builder: (dialogContext) => AlertDialog(
-                                    title: const Text('Имя'),
+                                    title: Text(tr(context, 'Имя')),
                                     content: TextField(
                                       controller: controller,
                                       maxLength: 100,
@@ -115,7 +126,7 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(dialogContext),
-                                        child: const Text('Отмена'),
+                                        child: Text(tr(context, 'Отмена')),
                                       ),
                                       TextButton(
                                         onPressed: () {
@@ -128,7 +139,7 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                                             );
                                           }
                                         },
-                                        child: const Text('Сохранить'),
+                                        child: Text(tr(context, 'Сохранить')),
                                       ),
                                     ],
                                   ),
@@ -136,81 +147,88 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                                 controller.dispose();
                                 if (name != null && mounted) {
                                   await perform(() async {
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(user.uid)
-                                        .set({
-                                          'name': name,
-                                        }, SetOptions(merge: true));
-                                    await user.updateDisplayName(name);
+                                    await users.updateName(user.uid, name);
                                   });
                                 }
                               },
-                        child: const Text('Изменить имя'),
+                        child: Text(tr(context, 'Изменить имя')),
                       ),
                     ],
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(
+              height:
+                  CampusTokens.of(context).space8 +
+                  CampusTokens.of(context).space4,
+            ),
             _SettingsGroup(
-              title: 'Учёба',
+              title: tr(context, 'Учёба'),
               children: [
                 ListTile(
                   leading: const Icon(Icons.people_outline_rounded),
-                  title: const Text('Выбранная группа'),
+                  title: Text(tr(context, 'Выбранная группа')),
                   subtitle: Text(settings.selectedGroup),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.goNamed(Routes.schedule),
                 ),
               ],
             ),
             _SettingsGroup(
-              title: 'Приложение',
+              title: tr(context, 'Приложение'),
               children: [
                 ListTile(
                   leading: const Icon(Icons.contrast_rounded),
-                  title: const Text('Тема'),
-                  subtitle: DropdownButton<ThemeMode>(
+                  title: Text(tr(context, 'Тема')),
+                  subtitle: ui.SegmentedPill<ThemeMode>(
                     value: settings.themeMode,
-                    isExpanded: true,
-                    underline: const SizedBox(),
-                    onChanged: busy
-                        ? null
-                        : (value) {
-                            if (value != null) {
-                              perform(
-                                () => ref
-                                    .read(appSettingsProvider.notifier)
-                                    .setThemeMode(value),
-                              );
-                            }
-                          },
-                    items: const [
-                      DropdownMenuItem(
+                    options: [
+                      ui.SegmentOption(
                         value: ThemeMode.system,
-                        child: Text('Системная'),
+                        label: tr(context, 'Системная'),
                       ),
-                      DropdownMenuItem(
+                      ui.SegmentOption(
                         value: ThemeMode.light,
-                        child: Text('Светлая'),
+                        label: tr(context, 'Светлая'),
                       ),
-                      DropdownMenuItem(
+                      ui.SegmentOption(
                         value: ThemeMode.dark,
-                        child: Text('Тёмная'),
+                        label: tr(context, 'Тёмная'),
                       ),
                     ],
+                    onChanged: (value) => perform(
+                      () => ref
+                          .read(appSettingsProvider.notifier)
+                          .setThemeMode(value),
+                    ),
                   ),
                 ),
                 const Divider(indent: 56),
-                const ListTile(
-                  leading: Icon(Icons.language_outlined),
-                  title: Text('Язык: русский'),
-                  subtitle: Text('Другие языки пока не реализованы'),
+                ListTile(
+                  leading: const Icon(Icons.language_outlined),
+                  title: Text(AppLocalizations.of(context)!.language),
+                  subtitle: DropdownButton<String>(
+                    value: settings.localeCode,
+                    items: const [
+                      DropdownMenuItem(value: 'ru', child: Text('Русский')),
+                      DropdownMenuItem(value: 'en', child: Text('English')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        perform(
+                          () => ref
+                              .read(appSettingsProvider.notifier)
+                              .setLocale(value),
+                        );
+                      }
+                    },
+                  ),
                 ),
                 const Divider(indent: 56),
                 if (user != null && androidPushSupported)
                   SwitchListTile(
-                    title: const Text('Push-уведомления'),
+                    title: Text(tr(context, 'Push-уведомления')),
                     secondary: const Icon(Icons.notifications_none_rounded),
                     value:
                         settings.notificationsEnabled &&
@@ -227,19 +245,28 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                           }),
                   )
                 else
-                  const ListTile(
+                  ListTile(
                     leading: Icon(Icons.notifications_none_rounded),
-                    title: Text('Push-уведомления недоступны'),
-                    subtitle: Text('Подключение ещё не настроено'),
+                    title: Text(tr(context, 'Push-уведомления недоступны')),
+                    subtitle: Text(tr(context, 'Подключение ещё не настроено')),
                   ),
               ],
             ),
             _SettingsGroup(
-              title: 'Информация',
+              title: tr(context, 'Информация'),
               children: [
                 ListTile(
+                  leading: const Icon(Icons.palette_rounded),
+                  title: Text(strings(context).designTitle),
+                  onTap: () => context.pushNamed(Routes.design),
+                ),
+                ListTile(
+                  title: Text(tr(context, 'Неделя 3: состояние')),
+                  onTap: () => context.pushNamed(Routes.week3),
+                ),
+                ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
-                  title: const Text('О приложении'),
+                  title: Text(tr(context, 'О приложении')),
                   trailing: const Icon(Icons.chevron_right_rounded, size: 18),
                   onTap: () => showAboutDialog(
                     context: context,
@@ -250,8 +277,11 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                       color: theme.colorScheme.primary,
                     ),
                     children: [
-                      const Text(
-                        'Расписание, новости и каталог кампуса. Демонстрационные данные отмечены отдельно.',
+                      Text(
+                        tr(
+                          context,
+                          'Расписание, новости и каталог кампуса. Демонстрационные данные отмечены отдельно.',
+                        ),
                       ),
                     ],
                   ),
@@ -259,7 +289,7 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
               ],
             ),
             if (busy) const LinearProgressIndicator(),
-            const SizedBox(height: 8),
+            SizedBox(height: CampusTokens.of(context).space8),
             OutlinedButton.icon(
               icon: const Icon(Icons.logout_rounded),
               onPressed: busy
@@ -268,7 +298,9 @@ class _ProfileState extends ConsumerState<ProfileScreen> {
                       () => ref.read(authControllerProvider.notifier).signOut(),
                     ),
               label: Text(
-                authenticated ? 'Выйти из аккаунта' : 'Завершить демонстрацию',
+                authenticated
+                    ? tr(context, 'Выйти из аккаунта')
+                    : tr(context, 'Завершить демонстрацию'),
               ),
             ),
           ],
@@ -284,12 +316,15 @@ class _SettingsGroup extends StatelessWidget {
   final List<Widget> children;
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 16),
+    padding: EdgeInsets.only(bottom: CampusTokens.of(context).space16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          padding: EdgeInsets.only(
+            left: CampusTokens.of(context).space4,
+            bottom: CampusTokens.of(context).space8,
+          ),
           child: Text(
             title,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -297,8 +332,8 @@ class _SettingsGroup extends StatelessWidget {
             ),
           ),
         ),
-        Card(
-          margin: EdgeInsets.zero,
+        ui.CampusCard(
+          padding: EdgeInsets.zero,
           child: Column(children: children),
         ),
       ],

@@ -1,0 +1,350 @@
+{
+  "@@locale": "ru",
+  "home": "Главная",
+  "schedule": "Расписание",
+  "feed": "Лента",
+  "campus": "Каталог",
+  "settings": "Настройки",
+  "language": "Язык",
+  "profileTitle": "Профиль и настройки",
+  "offline": "Нет сети · данные от {date}",
+  "@offline": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownDate": "неизвестной даты",
+  "notFound": "Не найдено",
+  "backHome": "На главную",
+  "uiNewsAndEvents0": "Новости и события",
+  "uiNews1": "Новости",
+  "uiEvents2": "События",
+  "uiSearchTheFeed3": "Найти в ленте",
+  "uiFavorites4": "Избранное",
+  "uiNoResults5": "Ничего не найдено",
+  "uiDetails6": "Подробности",
+  "uiRemoveFromFavorites7": "Удалить из избранного",
+  "uiAddToFavorites8": "В избранное",
+  "uiSavedToFavorites9": "В избранном",
+  "uiSaveToFavorites10": "Добавить в избранное",
+  "uiWeekStateManagement11": "Неделя 3: состояние",
+  "uiSchedule12": "Расписание",
+  "uiStudyGroup13": "Учебная группа",
+  "uiFreeDay14": "Свободный день",
+  "uiNoClassesOnThisDay15": "В этот день занятий нет",
+  "uiCampusDirectory16": "Каталог кампуса",
+  "uiBuildingsAndRooms17": "КОРПУСА И АУДИТОРИИ",
+  "uiFindYourClassroom18": "Найдите свою аудиторию",
+  "uiSearchByBuildingFloorOrRoomNumber19": "Поиск по названию корпуса, этажу или номеру.",
+  "uiBuildingFloorOrRoom20": "Корпус, этаж или аудитория",
+  "uiDemoDirectoryGoogleMapsIsPlannedForALaterStage21": "Демонстрационный каталог · Google Maps появится на следующем этапе.",
+  "uiNoClassroomsFound22": "Аудиторий не найдено",
+  "uiProfile23": "Профиль",
+  "uiNextClass24": "Ближайшее занятие",
+  "uiNoClassesForTheSelectedGroup25": "Для выбранной группы занятий нет",
+  "uiQuickAccess26": "Быстрый доступ",
+  "uiClasses27": "Пары",
+  "uiCampus28": "Кампус",
+  "uiUpcomingEvents29": "Ближайшие события",
+  "uiNoUpcomingEvents30": "Ближайших событий нет",
+  "uiNoNews31": "Новостей нет",
+  "uiRegistration32": "Регистрация",
+  "uiSignIn33": "Вход в приложение",
+  "uiYourStudyDayInOnePlace34": "Учебный день — в одном месте.",
+  "uiName35": "Имя",
+  "uiEnterYourName36": "Введите имя",
+  "uiEnterAValidEmail37": "Введите корректный email",
+  "uiPassword38": "Пароль",
+  "uiShowPassword39": "Показать пароль",
+  "uiHidePassword40": "Скрыть пароль",
+  "uiAtLeastCharacters41": "Минимум 6 символов",
+  "uiConfirmPassword42": "Повторите пароль",
+  "uiPasswordsDoNotMatch43": "Пароли не совпадают",
+  "uiCreateAccount44": "Создать аккаунт",
+  "uiSignInNow45": "Войти",
+  "uiAlreadyHaveAnAccount46": "Уже есть аккаунт",
+  "uiSignInWithGoogle47": "Войти через Google",
+  "uiResetPassword48": "Восстановить пароль",
+  "uiIfTheAccountExistsAPasswordResetEmailHasBeenSent49": "Если аккаунт существует, письмо для восстановления отправлено. Проверьте папки «Входящие» и «Спам». Если письмо попало в спам, отметьте его как «Не спам».",
+  "uiGuest50": "Гость",
+  "uiDemoMode51": "Демонстрационный режим",
+  "uiCouldNotLoadTheFirestoreProfile52": "Не удалось загрузить профиль Firestore",
+  "uiNameNotSpecified53": "Имя не указано",
+  "uiCancel54": "Отмена",
+  "uiSave55": "Сохранить",
+  "uiEditName56": "Изменить имя",
+  "uiStudies57": "Учёба",
+  "uiSelectedGroup58": "Выбранная группа",
+  "uiApplication59": "Приложение",
+  "uiTheme60": "Тема",
+  "uiSystem61": "Система",
+  "uiLight62": "Светлая",
+  "uiDark63": "Тёмная",
+  "uiPushNotifications64": "Push-уведомления",
+  "uiPushNotificationsUnavailable65": "Push-уведомления недоступны",
+  "uiConnectionIsNotConfiguredYet66": "Подключение ещё не настроено",
+  "uiInformation67": "Информация",
+  "uiAbout68": "О приложении",
+  "uiScheduleNewsAndCampusDirectoryDemoDataIsLabeled69": "Расписание, новости и каталог кампуса. Демонстрационные данные отмечены отдельно.",
+  "uiSignOut70": "Выйти из аккаунта",
+  "uiExitDemo71": "Завершить демонстрацию",
+  "uiCouldNotRefreshData72": "Не удалось обновить данные",
+  "uiRetry73": "Повторить",
+  "uiLoadingData74": "Загрузка данных",
+  "uiDataSource75": "Источник данных",
+  "uiOk76": "Понятно",
+  "uiNotFound77": "Не найдено",
+  "uiThePageOrItemDoesNotExist78": "Страница или запись не существует",
+  "uiGoHome79": "На главную",
+  "uiLoadingSettings80": "Загружаем настройки…",
+  "uiCouldNotLoadLocalDataCheckStorageAccessAndTryAgain81": "Не удалось загрузить локальные данные. Проверьте доступ к хранилищу браузера и повторите попытку.",
+  "uiNow82": "Сейчас",
+  "allItems": "Все",
+  "guest": "гость",
+  "lecture": "Лекция",
+  "practice": "Практика",
+  "lab": "Лабораторная",
+  "welcome": "Добро пожаловать, {name}!",
+  "@welcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonCount": "Занятий: {count}",
+  "@lessonCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "groupLabel": "Группа {group}",
+  "@groupLabel": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "weekdayLabel": "День недели: {day}",
+  "@weekdayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "roomLabel": "Аудитория {room}",
+  "@roomLabel": {
+    "placeholders": {
+      "room": {
+        "type": "String"
+      }
+    }
+  },
+  "floorLabel": "Этаж {floor}",
+  "@floorLabel": {
+    "placeholders": {
+      "floor": {
+        "type": "String"
+      }
+    }
+  },
+  "designTitle": "Витрина компонентов",
+  "designLight": "Светлая тема",
+  "designDark": "Тёмная тема",
+  "designIntro": "Учебный день начинается здесь",
+  "designIntroBody": "Расписание, события и места кампуса — в одном ритме.",
+  "designCardTitle": "Группа CS-221",
+  "designCardBody": "Следующая пара в главном корпусе. До начала осталось 20 минут.",
+  "designCategories": "Категории",
+  "designStudy": "Учёба",
+  "designEvents": "События",
+  "designPlaces": "Корпуса",
+  "designNews": "Новости",
+  "designFilters": "Фильтры и действия",
+  "designRoute": "Маршрут",
+  "designSort": "Сортировка",
+  "designMap": "Карта",
+  "designFavorite": "В избранное",
+  "designShare": "Поделиться",
+  "designPhoto": "Иллюстрация встречи выпускников",
+  "designBadge": "Событие кампуса",
+  "designListing": "Встреча выпускников",
+  "designLocation": "Центральная площадь",
+  "designTime": "18:00",
+  "designStats": "В цифрах",
+  "designSeats": "Мест",
+  "designFloor": "Этаж",
+  "designDuration": "Минут",
+  "designRoom": "Аудитория",
+  "designStates": "Состояния экрана",
+  "designEmptyTitle": "На сегодня всё",
+  "designEmptyBody": "Новых событий пока нет. Загляните сюда чуть позже.",
+  "designErrorTitle": "Не удалось загрузить события",
+  "designErrorBody": "Проверьте подключение и попробуйте ещё раз.",
+  "designSheetHandle": "Ручка нижней панели",
+  "designFeedback": "Пример действия выполнен",
+  "imageNews": "Иллюстрация новости",
+  "imageEvent": "Иллюстрация события",
+  "imageBuilding": "Иллюстрация корпуса",
+  "imageTeacher": "Аватар преподавателя",
+  "imageSubject": "Иллюстрация дисциплины",
+  "imageLoading": "Загружаем изображение",
+  "navMap": "Карта",
+  "navProfile": "Профиль",
+  "shareContent": "Поделиться",
+  "sortContent": "Сортировка",
+  "nextClass": "Следующая пара",
+  "todayClasses": "Сегодня",
+  "routeRoom": "Маршрут",
+  "studyCategory": "Учёба",
+  "sportCategory": "Спорт",
+  "scienceCategory": "Наука",
+  "filterContent": "Фильтры",
+  "notificationsTitle": "Уведомления",
+  "noNotifications": "Новых уведомлений нет",
+  "currentClass": "Идёт сейчас",
+  "weekLabel": "Неделя",
+  "previousWeek": "Предыдущая неделя",
+  "nextWeek": "Следующая неделя",
+  "startsIn": "через {minutes} мин",
+  "@startsIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "readDuration": "{minutes} мин",
+  "@readDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "copiedContent": "Ссылка скопирована",
+  "detailWhere": "Где",
+  "detailTeacher": "Преподаватель",
+  "detailSubject": "Дисциплина",
+  "detailNotes": "Материалы и заметки",
+  "detailNext": "Следующие занятия по этой дисциплине",
+  "detailMaterials": "Материалы",
+  "detailSyllabus": "Программа курса",
+  "detailWeekly": "Расписание на неделю",
+  "detailSubjects": "Дисциплины преподавателя",
+  "detailContact": "Контакты",
+  "detailWrite": "Написать",
+  "detailCopyEmail": "Скопировать email",
+  "detailMap": "Показать на карте",
+  "detailRooms": "Список аудиторий",
+  "detailCredits": "Кредиты",
+  "detailHours": "Часов в неделю",
+  "detailAssessment": "Форма контроля",
+  "detailDuration": "Длительность, мин",
+  "detailTime": "Время",
+  "detailFloors": "Этажи",
+  "detailCapacity": "Вместимость",
+  "detailFloor": "Этаж",
+  "detailOffice": "Кабинет",
+  "detailMissing": "Не указано",
+  "detailNoMaterials": "Материалы пока не добавлены",
+  "detailNoLessons": "Занятий пока нет",
+  "detailRoom": "Аудитория: {number}",
+  "detailRoomSummary": "Этаж {floor} · Аудитория {number}",
+  "detailDemoPlan": "Демонстрационный план кампуса",
+  "detailAddress": "Адрес",
+  "detailCopy": "Скопировать",
+  "detailPhoto": "Обложка",
+  "detailShare": "Скопировать ссылку",
+  "detailOfficeHours": "Часы приёма",
+  "detailCount": "Аудитории",
+  "detailRoomHint": "Этаж {floor}, уточните путь у администратора",
+  "@detailRoom": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "@detailRoomSummary": {
+    "placeholders": {
+      "floor": {
+        "type": "String"
+      },
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "@detailRoomHint": {
+    "placeholders": {
+      "floor": {
+        "type": "String"
+      }
+    }
+  },
+  "pastClass": "Занятие завершено",
+  "articleAbout": "О событии",
+  "articleOrganizer": "Организатор",
+  "articlePrice": "Стоимость участия",
+  "articleFree": "Бесплатно",
+  "articleFacts": "Главное",
+  "noUpcomingEvents": "Новых событий пока нет",
+  "noUpcomingEventsHint": "Запланированные мероприятия появятся здесь.",
+  "mapCampus": "План кампуса",
+  "mapExpand": "Развернуть карту",
+  "mapBannerHint": "Выберите корпус на плане или разверните карту.",
+  "mapAllBuildings": "Все корпуса",
+  "mapFreeOnly": "Свободные сейчас",
+  "mapFree": "Свободна по расписанию",
+  "mapOccupied": "Сейчас идёт занятие",
+  "mapAvailabilityNote": "Занятость указана по загруженному расписанию всех групп. Бронирования и фактическая занятость не учитываются.",
+  "mapCheckedAt": "Состояние на",
+  "mapEmptyHint": "Попробуйте другую аудиторию, корпус или отключите фильтр свободных аудиторий.",
+  "mapResetFilters": "Сбросить фильтры",
+  "mapClearSearch": "Очистить поиск",
+  "mapClose": "Закрыть",
+  "mapEquipment": "Оснащение",
+  "mapTodaySchedule": "Занятия в этой аудитории сегодня",
+  "mapNextClass": "Следующая пара",
+  "mapLessonDetails": "Подробнее о занятии",
+  "mapFreeCount": "Свободны по расписанию",
+  "mapNoBuildings": "Корпуса пока не добавлены",
+  "tasksTitle": "Личные задачи",
+  "tasksAdd": "Добавить",
+  "tasksNew": "Новая задача",
+  "tasksName": "Название задачи",
+  "tasksNameRequired": "Введите название задачи",
+  "tasksNotes": "Заметка (необязательно)",
+  "tasksPickDate": "Назначить дату",
+  "tasksClearDate": "Убрать дату",
+  "tasksNoDate": "Без срока",
+  "tasksOverdue": "Просрочено",
+  "tasksSaving": "Сохраняем…",
+  "tasksEdit": "Редактировать",
+  "tasksDelete": "Удалить",
+  "tasksDeleteConfirm": "Удалить задачу?",
+  "tasksActions": "Действия задачи",
+  "tasksComplete": "Отметить выполнение",
+  "tasksOpen": "Активные",
+  "tasksDone": "Выполнено",
+  "tasksEmpty": "Добавьте своё дело или дедлайн",
+  "tasksLocalHint": "Сохраняются на этом устройстве",
+  "tasksLoadError": "Не удалось загрузить задачи",
+  "tasksSaveError": "Не удалось сохранить задачу. Повторите попытку.",
+  "tasksShowAll": "Показать все задачи",
+  "tasksCollapse": "Свернуть",
+  "homeCampusNews": "В кампусе",
+  "homeStartsInHours": "через {hours} ч {minutes} мин",
+  "@homeStartsInHours": {"placeholders": {"hours": {"type": "String"}, "minutes": {"type": "String"}}},
+  "homeTomorrowAt": "завтра в {time}",
+  "@homeTomorrowAt": {"placeholders": {"time": {"type": "String"}}},
+  "feedOldestFirst": "Сначала ранние",
+  "feedNewestFirst": "Сначала поздние"
+}

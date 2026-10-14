@@ -1,6 +1,7 @@
 import 'package:campus_assistant/core/utils/date_format.dart';
 import 'package:campus_assistant/features/feed/domain/entities/news_item.dart';
 import 'package:flutter/material.dart';
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
 
 class NewsTile extends StatelessWidget {
   const NewsTile({super.key, required this.item, this.onTap, this.trailing});
@@ -10,12 +11,13 @@ class NewsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final t = CampusTokens.of(context);
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(t.space16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -23,9 +25,9 @@ class NewsTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 12),
+                    padding: EdgeInsets.only(right: t.space8),
                     child: Icon(
-                      Icons.article_outlined,
+                      Icons.article_rounded,
                       size: 20,
                       color: theme.colorScheme.primary,
                     ),
@@ -42,9 +44,14 @@ class NewsTile extends StatelessWidget {
                     SizedBox(width: 48, height: 48, child: trailing!),
                 ],
               ),
-              const SizedBox(height: 8),
-              Text(item.title, style: theme.textTheme.titleMedium),
-              const SizedBox(height: 8),
+              SizedBox(height: t.space8),
+              Text(
+                item.title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: t.space8),
               Text(
                 item.summary,
                 maxLines: 2,

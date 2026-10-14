@@ -1,11 +1,18 @@
+import 'package:campus_assistant/l10n/ui_text.dart';
+import 'package:campus_assistant/core/router/routes.dart';
+import 'package:provider/provider.dart' as local;
+
+import 'feed_ui_state.dart';
+
 import 'dart:async';
 
 import 'package:campus_assistant/core/data/campus_state.dart';
 import 'package:campus_assistant/shared/widgets/data_view.dart';
 import 'package:campus_assistant/shared/widgets/page_body.dart';
-import 'package:campus_assistant/shared/widgets/empty_state.dart';
-import 'package:campus_assistant/shared/widgets/event_card.dart';
-import 'package:campus_assistant/shared/widgets/news_tile.dart';
+import 'package:campus_assistant/shared/widgets/ui/ui.dart' as components;
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
+import 'package:flutter/services.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,19 +27,22 @@ class FeedScreen extends ConsumerStatefulWidget {
 class _FeedState extends ConsumerState<FeedScreen> {
   final search = TextEditingController();
   Timer? debounce;
-  String query = '', category = 'Все';
-  bool eventsTab = false, favoritesOnly = false;
+  late final FeedUiState ui;
+  String get query => ui.query;
+  String get category => ui.category;
+  bool get eventsTab => ui.eventsTab;
+  bool get favoritesOnly => ui.favoritesOnly;
   @override
   void initState() {
     super.initState();
-    eventsTab = widget.initialEvents;
+    ui = FeedUiState(initialEvents: widget.initialEvents);
   }
 
   @override
   void didUpdateWidget(covariant FeedScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialEvents != widget.initialEvents) {
-      eventsTab = widget.initialEvents;
+      ui.setEvents(widget.initialEvents);
     }
   }
 
@@ -40,14 +50,25 @@ class _FeedState extends ConsumerState<FeedScreen> {
   void dispose() {
     debounce?.cancel();
     search.dispose();
+    ui.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    return local.ChangeNotifierProvider<FeedUiState>.value(
+      value: ui,
+      child: local.Consumer<FeedUiState>(
+        builder: (context, _, _) => _buildFeed(context),
+      ),
+    );
+  }
+
+  Widget _buildFeed(BuildContext context) {
+    final t = CampusTokens.of(context);
     final favorites = ref.watch(favoritesProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Новости и события')),
+      appBar: AppBar(title: Text(tr(context, 'Новости и события'))),
       body: PageBody(
         child: DataView(
           builder: (data) {
@@ -64,7 +85,11 @@ class _FeedState extends ConsumerState<FeedScreen> {
                               favorites.contains('news:${e.id}')),
                     )
                     .toList()
-                  ..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+                  ..sort(
+                    (a, b) => ui.oldestFirst
+                        ? a.publishedAt.compareTo(b.publishedAt)
+                        : b.publishedAt.compareTo(a.publishedAt),
+                  );
             final events =
                 data.events
                     .where(
@@ -73,118 +98,227 @@ class _FeedState extends ConsumerState<FeedScreen> {
                               .toLowerCase()
                               .contains(query) &&
                           (!favoritesOnly ||
-                              favorites.contains('event:${e.id}')),
+                              favorites.contains('event:${e.id}')) &&
+                          (ui.eventTag == 'Все' ||
+                              e.tags.contains(ui.eventTag)),
                     )
                     .toList()
-                  ..sort((a, b) => a.startAt.compareTo(b.startAt));
+                  ..sort(
+                    (a, b) => ui.oldestFirst
+                        ? b.startAt.compareTo(a.startAt)
+                        : a.startAt.compareTo(b.startAt),
+                  );
             return RefreshIndicator(
               onRefresh: () => ref.read(campusDataProvider.notifier).refresh(),
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                padding: EdgeInsets.all(CampusTokens.of(context).space24),
                 children: [
-                  SegmentedButton<bool>(
-                    segments: const [
-                      ButtonSegment(value: false, label: Text('Новости')),
-                      ButtonSegment(value: true, label: Text('События')),
+                  components.SegmentedPill<bool>(
+                    options: [
+                      components.SegmentOption(
+                        value: false,
+                        label: tr(context, 'Новости'),
+                      ),
+                      components.SegmentOption(
+                        value: true,
+                        label: tr(context, 'События'),
+                      ),
                     ],
-                    selected: {eventsTab},
-                    showSelectedIcon: false,
-                    onSelectionChanged: (value) =>
-                        setState(() => eventsTab = value.first),
+                    value: eventsTab,
+                    onChanged: ui.setEvents,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: CampusTokens.of(context).space16),
                   TextField(
                     controller: search,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search_rounded),
-                      hintText: 'Найти в ленте',
+                      hintText: tr(context, 'Найти в ленте'),
                     ),
                     onChanged: (value) {
                       debounce?.cancel();
                       debounce = Timer(const Duration(milliseconds: 300), () {
                         if (mounted) {
-                          setState(() => query = value.trim().toLowerCase());
+                          ui.setQuery(value);
                         }
                       });
                     },
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(
+                    height:
+                        CampusTokens.of(context).space8 +
+                        CampusTokens.of(context).space4,
+                  ),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: CampusTokens.of(context).space8,
+                    runSpacing: CampusTokens.of(context).space8,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       FilterChip(
-                        label: const Text('Избранное'),
+                        labelStyle: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: favoritesOnly
+                                  ? t.onAccent
+                                  : t.readableSecondary,
+                            ),
+                        backgroundColor: t.surface2,
+                        selectedColor: t.accent,
+                        label: Text(tr(context, 'Избранное')),
                         selected: favoritesOnly,
-                        avatar: const Icon(
-                          Icons.bookmark_border_rounded,
-                          size: 16,
+                        avatar: Icon(
+                          Icons.bookmark_rounded,
+                          color: favoritesOnly ? t.onAccent : t.accent,
                         ),
-                        onSelected: (value) =>
-                            setState(() => favoritesOnly = value),
+                        onSelected: (value) => ui.setFavoritesOnly(value),
                       ),
                       if (!eventsTab)
-                        DropdownButton<String>(
-                          value: categories.contains(category)
-                              ? category
-                              : 'Все',
-                          underline: const SizedBox(),
-                          items: categories
-                              .map(
-                                (e) =>
-                                    DropdownMenuItem(value: e, child: Text(e)),
-                              )
-                              .toList(),
-                          onChanged: (value) =>
-                              setState(() => category = value ?? 'Все'),
-                        ),
+                        for (final c in categories)
+                          FilterChip(
+                            labelStyle: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: category == c
+                                      ? t.onAccent
+                                      : t.readableSecondary,
+                                ),
+                            backgroundColor: t.surface2,
+                            selectedColor: t.accent,
+                            avatar: Icon(
+                              Icons.label_rounded,
+                              color: category == c ? t.onAccent : t.accent,
+                            ),
+                            label: Text(tr(context, c)),
+                            selected: category == c,
+                            onSelected: (_) => ui.setCategory(c),
+                          ),
                     ],
                   ),
-                  SourceNotice(data: data),
-                  const SizedBox(height: 8),
-                  if (eventsTab && events.isEmpty || !eventsTab && news.isEmpty)
-                    const EmptyState(
-                      icon: Icons.search_off_rounded,
-                      message: 'Ничего не найдено',
-                    ),
-                  if (!eventsTab)
-                    for (final item in news)
-                      NewsTile(
-                        item: item,
-                        onTap: () => context.push(
-                          '/news/${Uri.encodeComponent(item.id)}',
-                        ),
-                        trailing: IconButton(
-                          tooltip: 'Избранное',
-                          onPressed: () =>
-                              toggleFavorite(context, ref, 'news', item.id),
-                          icon: Icon(
-                            favorites.contains('news:${item.id}')
-                                ? Icons.bookmark_rounded
-                                : Icons.bookmark_border_rounded,
-                          ),
-                        ),
-                      ),
                   if (eventsTab)
-                    for (final event in events)
-                      EventCard(
-                        event: event,
-                        onTap: () => context.push(
-                          '/event/${Uri.encodeComponent(event.id)}',
-                        ),
-                        trailing: IconButton(
-                          tooltip: 'Избранное',
-                          onPressed: () =>
-                              toggleFavorite(context, ref, 'event', event.id),
-                          icon: Icon(
-                            favorites.contains('event:${event.id}')
-                                ? Icons.bookmark_rounded
-                                : Icons.bookmark_border_rounded,
+                    Wrap(
+                      spacing: t.space8,
+                      runSpacing: t.space8,
+                      children: [
+                        for (final tag in {
+                          'Все',
+                          ...data.events.expand((event) => event.tags),
+                        })
+                          FilterChip(
+                            label: Text(tr(context, tag)),
+                            selected: ui.eventTag == tag,
+                            avatar: Icon(
+                              Icons.event_rounded,
+                              color: ui.eventTag == tag ? t.onAccent : t.accent,
+                            ),
+                            labelStyle: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: ui.eventTag == tag
+                                      ? t.onAccent
+                                      : t.readableSecondary,
+                                ),
+                            onSelected: (_) => ui.setEventTag(tag),
                           ),
-                        ),
+                      ],
+                    ),
+                  SizedBox(height: t.space16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: ui.toggleSort,
+                      icon: const Icon(Icons.sort_rounded),
+                      label: Text(
+                        eventsTab
+                            ? (ui.oldestFirst
+                                  ? strings(context).feedNewestFirst
+                                  : strings(context).feedOldestFirst)
+                            : (ui.oldestFirst
+                                  ? strings(context).feedOldestFirst
+                                  : strings(context).feedNewestFirst),
                       ),
+                    ),
+                  ),
+                  SourceNotice(data: data),
+                  SizedBox(height: CampusTokens.of(context).space8),
+                  if (eventsTab && events.isEmpty || !eventsTab && news.isEmpty)
+                    components.EmptyState(
+                      title: tr(context, 'Ничего не найдено'),
+                      message: tr(context, 'Найти в ленте'),
+                    ),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final cards = <Widget>[
+                        if (!eventsTab)
+                          for (final item in news)
+                            components.ListingCard(
+                              source: item.imageUrl,
+                              badge: item.category,
+                              title: item.title,
+                              location: item.author ?? item.category,
+                              locationIcon: Icons.person_rounded,
+                              value: strings(context).readDuration(
+                                (item.readMinutes ?? 4).toString(),
+                              ),
+                              favorite: favorites.contains('news:${item.id}'),
+                              onFavorite: () =>
+                                  toggleFavorite(context, ref, 'news', item.id),
+                              onShare: () =>
+                                  _share(item.title, Routes.news, item.id),
+                              onMap: () => context.goNamed(
+                                Routes.map,
+                                queryParameters: {
+                                  'building': item.relatedBuildingId ?? '',
+                                },
+                              ),
+                              onTap: () => context.pushNamed(
+                                Routes.news,
+                                pathParameters: {'id': item.id},
+                              ),
+                            ),
+                        if (eventsTab)
+                          for (final event in events)
+                            components.ListingCard(
+                              source: event.coverUrl,
+                              badge: tr(context, 'События'),
+                              title: event.title,
+                              location: event.location,
+                              value:
+                                  '${event.startAt.day}.${event.startAt.month}',
+                              favorite: favorites.contains('event:${event.id}'),
+                              onFavorite: () => toggleFavorite(
+                                context,
+                                ref,
+                                'event',
+                                event.id,
+                              ),
+                              onShare: () =>
+                                  _share(event.title, Routes.event, event.id),
+                              onMap: () => context.goNamed(
+                                Routes.map,
+                                queryParameters: {
+                                  'building': event.buildingId ?? '',
+                                  'room': event.room ?? '',
+                                },
+                              ),
+                              onTap: () => context.pushNamed(
+                                Routes.event,
+                                pathParameters: {'id': event.id},
+                              ),
+                            ),
+                      ];
+                      final t = CampusTokens.of(context);
+                      return Wrap(
+                        spacing: t.space16,
+                        runSpacing: t.space16,
+                        children: [
+                          for (final card in cards)
+                            SizedBox(
+                              width: constraints.maxWidth >= t.statRowBreakpoint
+                                  ? (constraints.maxWidth - t.space16) / 2
+                                  : constraints.maxWidth,
+                              child: card,
+                            ),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             );
@@ -192,5 +326,16 @@ class _FeedState extends ConsumerState<FeedScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _share(String title, String route, String id) async {
+    final location = GoRouter.of(context)
+        .namedLocation(route, pathParameters: {'id': id});
+    await Clipboard.setData(ClipboardData(text: '$title\n$location'));
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(strings(context).copiedContent)));
+    }
   }
 }

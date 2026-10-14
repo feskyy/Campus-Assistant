@@ -1,8 +1,14 @@
+import 'package:campus_assistant/l10n/ui_text.dart';
+import 'package:campus_assistant/core/data/local_store.dart';
+import 'package:campus_assistant/core/domain/local_store.dart';
+import 'package:campus_assistant/core/di/storage_providers.dart';
+
 import 'dart:async';
 
 import 'package:campus_assistant/core/data/app_settings.dart';
 import 'package:campus_assistant/core/data/firebase_services.dart';
 import 'package:campus_assistant/core/theme/app_theme.dart';
+import 'package:campus_assistant/core/theme/campus_tokens.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,8 +28,9 @@ class CampusBootstrap extends StatefulWidget {
 }
 
 class _StartupData {
-  const _StartupData(this.prefs, this.firebaseError);
+  const _StartupData(this.prefs, this.firebaseError, this.store);
   final SharedPreferences prefs;
+  final LocalStore store;
   final String? firebaseError;
 }
 
@@ -39,12 +46,16 @@ class _BootstrapState extends State<CampusBootstrap> {
     final prefs =
         await (widget.preferencesLoader ?? SharedPreferences.getInstance)()
             .timeout(const Duration(seconds: 10));
+    final store = widget.preferencesLoader == null
+        ? await HiveLocalStore.open()
+        : testStoreFor(prefs);
+    await migrateLegacyStorage(prefs, store);
     final firebaseError = await initializeFirebase().timeout(
       const Duration(seconds: 15),
       onTimeout: () =>
           'Firebase не отвечает. Вход недоступен; можно открыть демонстрацию.',
     );
-    return _StartupData(prefs, firebaseError);
+    return _StartupData(prefs, firebaseError, store);
   }
 
   @override
@@ -56,6 +67,7 @@ class _BootstrapState extends State<CampusBootstrap> {
         return ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(data.prefs),
+            localStoreProvider.overrideWithValue(data.store),
             firebaseReadyProvider.overrideWithValue(data.firebaseError == null),
             firebaseErrorProvider.overrideWithValue(data.firebaseError),
           ],
@@ -66,43 +78,51 @@ class _BootstrapState extends State<CampusBootstrap> {
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Campus Assistant',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(CampusTokens.of(context).space24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.school_rounded,
+                        size: CampusTokens.of(context).categoryDiameter,
+                        color: CampusTokens.of(context).accent,
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    if (!snapshot.hasError) ...[
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 16),
-                      const Text('Загружаем настройки…'),
-                    ] else ...[
-                      const Text(
-                        'Не удалось загрузить локальные данные. Проверьте доступ к хранилищу браузера и повторите попытку.',
-                        textAlign: TextAlign.center,
+                      SizedBox(height: CampusTokens.of(context).space16),
+                      Text(
+                        'Campus Assistant',
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 16),
-                      FilledButton(
-                        onPressed: () {
-                          final retry = load();
-                          setState(() {
-                            startup = retry;
-                          });
-                        },
-                        child: const Text('Повторить'),
-                      ),
+                      SizedBox(height: CampusTokens.of(context).space24),
+                      if (!snapshot.hasError) ...[
+                        const CircularProgressIndicator(),
+                        SizedBox(height: CampusTokens.of(context).space16),
+                        Text(tr(context, 'Загружаем настройки…')),
+                      ] else ...[
+                        Text(
+                          tr(
+                            context,
+                            'Не удалось загрузить локальные данные. Проверьте доступ к хранилищу браузера и повторите попытку.',
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: CampusTokens.of(context).space16),
+                        FilledButton(
+                          onPressed: () {
+                            final retry = load();
+                            setState(() {
+                              startup = retry;
+                            });
+                          },
+                          child: Text(tr(context, 'Повторить')),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -1,3 +1,9 @@
+import 'package:campus_assistant/core/domain/auth_repository.dart';
+export 'package:campus_assistant/core/di/auth_providers.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+import 'firebase_background.dart';
+
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final firebaseReadyProvider = Provider<bool>((ref) => false);
 final firebaseErrorProvider = Provider<String?>((ref) => null);
-Future<String?> initializeFirebase() async {
+Future<String?> initializeFirebase({
+  bool registerMessagingHandler = true,
+}) async {
   const apiKey = String.fromEnvironment('FIREBASE_API_KEY');
   const appId = String.fromEnvironment('FIREBASE_APP_ID');
   const projectId = String.fromEnvironment('FIREBASE_PROJECT_ID');
@@ -26,16 +34,20 @@ Future<String?> initializeFirebase() async {
         iosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID'),
       ),
     );
+    if (registerMessagingHandler &&
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android) {
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    }
     return null;
   } catch (_) {
     return 'Не удалось инициализировать Firebase. Проверьте конфигурацию платформы.';
   }
 }
 
-final authRepositoryProvider = Provider((ref) => FirebaseAuthRepository());
-
-class FirebaseAuthRepository {
+class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuth get auth => FirebaseAuth.instance;
+  @override
   Future<void> signIn(String email, String password) async {
     await auth.signInWithEmailAndPassword(
       email: email.trim(),
@@ -43,6 +55,7 @@ class FirebaseAuthRepository {
     );
   }
 
+  @override
   Future<void> register(String name, String email, String password) async {
     final result = await auth.createUserWithEmailAndPassword(
       email: email.trim(),
@@ -52,10 +65,15 @@ class FirebaseAuthRepository {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(result.user!.uid)
-        .set({'name': name.trim()}, SetOptions(merge: true));
+        .set({
+          'name': name.trim(),
+          'group': 'CS-221',
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
   }
 
   Future<void>? _googleInitialization;
+  @override
   Future<void> google() async {
     final provider = GoogleAuthProvider();
     if (kIsWeb) {
@@ -79,8 +97,10 @@ class FirebaseAuthRepository {
     }
   }
 
+  @override
   Future<void> resetPassword(String email) =>
       auth.sendPasswordResetEmail(email: email.trim());
+  @override
   Future<void> signOut() => auth.signOut();
 }
 

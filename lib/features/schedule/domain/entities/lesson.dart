@@ -1,8 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:campus_assistant/core/utils/json_validation.dart';
 import 'package:campus_assistant/core/utils/date_format.dart';
 
+part 'lesson.g.dart';
+
 enum LessonType { lecture, practice, lab }
 
+@JsonSerializable(includeIfNull: false)
 class Lesson {
   const Lesson({
     required this.id,
@@ -15,6 +19,12 @@ class Lesson {
     required this.endMinutes,
     this.type = LessonType.lecture,
     this.group = 'CS-221',
+    this.subjectId,
+    this.subjectTitle,
+    this.buildingId,
+    this.teacherId,
+    this.topic,
+    this.notes,
   });
 
   final String id;
@@ -31,6 +41,7 @@ class Lesson {
   final int endMinutes;
   final LessonType type;
   final String group;
+  final String? subjectId, subjectTitle, buildingId, teacherId, topic, notes;
 
   String get startTime => formatMinutes(startMinutes);
   String get endTime => formatMinutes(endMinutes);
@@ -49,44 +60,29 @@ class Lesson {
     if (!['lecture', 'practice', 'lab'].contains(json['type'])) {
       throw const FormatException('Invalid lesson type');
     }
-    return Lesson(
-      id: jsonString(json, 'id'),
-      subject: jsonString(json, 'subject'),
-      teacher: jsonString(json, 'teacher'),
-      building: jsonString(json, 'building'),
-      room: jsonString(json, 'room'),
-      weekday: jsonInt(json, 'weekday', 1, 7),
-      startMinutes: jsonInt(json, 'startMinutes', 0, 1439),
-      endMinutes: jsonInt(json, 'endMinutes', 1, 1440),
-      type: _lessonTypeFromString(json['type'] as String? ?? 'lecture'),
-      group: jsonString(json, 'group'),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'subject': subject,
-      'teacher': teacher,
-      'building': building,
-      'room': room,
-      'weekday': weekday,
-      'startMinutes': startMinutes,
-      'endMinutes': endMinutes,
-      'type': type.name,
-      'group': group,
-    };
-  }
-
-  static LessonType _lessonTypeFromString(String value) {
-    switch (value) {
-      case 'practice':
-        return LessonType.practice;
-      case 'lab':
-        return LessonType.lab;
-      case 'lecture':
-      default:
-        return LessonType.lecture;
+    for (final key in [
+      'id',
+      'subject',
+      'teacher',
+      'building',
+      'room',
+      'group',
+    ]) {
+      jsonString(json, key);
     }
+    jsonInt(json, 'weekday', 1, 7);
+    for (final key in [
+      'subjectId',
+      'subjectTitle',
+      'buildingId',
+      'teacherId',
+      'topic',
+      'notes',
+    ]) {
+      jsonOptionalString(json, key);
+    }
+    return _$LessonFromJson(json);
   }
+
+  Map<String, dynamic> toJson() => _$LessonToJson(this);
 }

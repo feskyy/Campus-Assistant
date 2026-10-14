@@ -1,0 +1,162 @@
+[
+  {
+    "file": "assets/images/news/clubs.png",
+    "kind": "news",
+    "label": "Открыта запись в студенческие клубы"
+  },
+  {
+    "file": "assets/images/news/library_hours.png",
+    "kind": "news",
+    "label": "Изменился график работы библиотеки"
+  },
+  {
+    "file": "assets/images/news/programming_awards.png",
+    "kind": "news",
+    "label": "Итоги олимпиады по программированию"
+  },
+  {
+    "file": "assets/images/news/project_rooms.png",
+    "kind": "news",
+    "label": "Открылись комнаты для командных проектов"
+  },
+  {
+    "file": "assets/images/news/mentoring.png",
+    "kind": "news",
+    "label": "Стартовала программа наставничества для первокурсников"
+  },
+  {
+    "file": "assets/images/news/recycling.png",
+    "kind": "news",
+    "label": "В кампусе появились пункты раздельного сбора"
+  },
+  {
+    "file": "assets/images/news/research.png",
+    "kind": "news",
+    "label": "Открыт приём заявок на студенческую конференцию"
+  },
+  {
+    "file": "assets/images/news/career_cv.png",
+    "kind": "news",
+    "label": "Карьерный центр проводит консультации по резюме"
+  },
+  {
+    "file": "assets/images/events/hackathon.png",
+    "kind": "events",
+    "label": "Хакатон Mobile Dev Weekend"
+  },
+  {
+    "file": "assets/images/events/career_day.png",
+    "kind": "events",
+    "label": "День карьеры"
+  },
+  {
+    "file": "assets/images/events/flutter_talk.png",
+    "kind": "events",
+    "label": "Гостевая лекция по Flutter"
+  },
+  {
+    "file": "assets/images/events/reading_club.png",
+    "kind": "events",
+    "label": "Открытая встреча читательского клуба"
+  },
+  {
+    "file": "assets/images/events/volleyball.png",
+    "kind": "events",
+    "label": "Студенческий турнир по волейболу"
+  },
+  {
+    "file": "assets/images/events/portfolio.png",
+    "kind": "events",
+    "label": "Практикум по проектному портфолио"
+  },
+  {
+    "file": "assets/images/subjects/math.png",
+    "kind": "subjects",
+    "label": "Математический анализ"
+  },
+  {
+    "file": "assets/images/subjects/dart.png",
+    "kind": "subjects",
+    "label": "Программирование на Dart"
+  },
+  {
+    "file": "assets/images/subjects/english.png",
+    "kind": "subjects",
+    "label": "Английский язык"
+  },
+  {
+    "file": "assets/images/subjects/algorithms.png",
+    "kind": "subjects",
+    "label": "Алгоритмы и структуры данных"
+  },
+  {
+    "file": "assets/images/subjects/databases.png",
+    "kind": "subjects",
+    "label": "Базы данных"
+  },
+  {
+    "file": "assets/images/subjects/mobile.png",
+    "kind": "subjects",
+    "label": "Мобильная разработка"
+  },
+  {
+    "file": "assets/images/subjects/history.png",
+    "kind": "subjects",
+    "label": "История Казахстана"
+  },
+  {
+    "file": "assets/images/subjects/management.png",
+    "kind": "subjects",
+    "label": "Менеджмент"
+  },
+  {
+    "file": "assets/images/teachers/ivanov.png",
+    "kind": "teachers",
+    "label": "Иванов И.И."
+  },
+  {
+    "file": "assets/images/teachers/petrova.png",
+    "kind": "teachers",
+    "label": "Петрова А.С."
+  },
+  {
+    "file": "assets/images/teachers/smith.png",
+    "kind": "teachers",
+    "label": "Смит Д."
+  },
+  {
+    "file": "assets/images/teachers/sidorov.png",
+    "kind": "teachers",
+    "label": "Сидоров П.П."
+  },
+  {
+    "file": "assets/images/teachers/akhmetov.png",
+    "kind": "teachers",
+    "label": "Ахметов Б.К."
+  },
+  {
+    "file": "assets/images/teachers/nurlanov.png",
+    "kind": "teachers",
+    "label": "Нурланов Е.Т."
+  },
+  {
+    "file": "assets/images/buildings/main.png",
+    "kind": "buildings",
+    "label": "Главный корпус"
+  },
+  {
+    "file": "assets/images/buildings/technology.png",
+    "kind": "buildings",
+    "label": "Корпус Б"
+  },
+  {
+    "file": "assets/images/buildings/library.png",
+    "kind": "buildings",
+    "label": "Библиотечный корпус"
+  },
+  {
+    "file": "assets/images/buildings/sport.png",
+    "kind": "buildings",
+    "label": "Спортивный корпус"
+  }
+]

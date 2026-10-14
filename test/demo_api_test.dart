@@ -24,8 +24,20 @@ void main() {
       final repository = CampusRepository(prefs: prefs, baseUrl: url, dio: dio);
       final data = await repository.load();
       expect(data.source, contains('Демонстрационные данные REST API'));
-      expect(data.lessons.map((e) => e.group), contains('TEST-101'));
-      expect(data.news.first.body, contains('полный текст'));
+      expect(data.lessons.map((e) => e.group), contains('CS-221'));
+      expect(data.news.length, greaterThanOrEqualTo(8));
+      expect(data.news.first.body.length, greaterThan(500));
+      expect(
+        data.news.every(
+          (item) => item.blocks.length >= 4 && item.blocks.length <= 6,
+        ),
+        isTrue,
+      );
+      expect(data.subjects.length, greaterThanOrEqualTo(5));
+      expect(data.teachers.length, greaterThanOrEqualTo(5));
+      expect(data.buildings.length, 4);
+      expect(data.buildings.every((item) => item.rooms.length >= 6), isTrue);
+      expect(data.news.first.imageUrl, startsWith('assets/images/news/'));
       expect(data.events, isNotEmpty);
       expect(repository.cached()!.source, contains('демонстрационные'));
     },
